@@ -1,0 +1,108 @@
+---
+
+- name: Create Nexus directories
+  become: yes
+  file:
+    group: "{{ sansible_nexus_group }}"
+    owner: "{{ sansible_nexus_user }}"
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ sansible_nexus_directory_log }}"
+    - "{{ sansible_nexus_directory_data }}"
+    - "{{ sansible_nexus_directory_data }}/etc"
+    - "{{ sansible_nexus_directory_package }}"
+    - "{{ sansible_nexus_directory_tmp }}"
+
+- name: Download Nexus
+  become: yes
+  become_user: "{{ sansible_nexus_user }}"
+  get_url:
+    dest: "{{ sansible_nexus_directory_package }}/nexus-{{ sansible_nexus_version }}.tar.gz"
+    url: "{{ sansible_nexus_download_url }}/nexus-{{ sansible_nexus_version }}-unix.tar.gz"
+
+- name: Unpack Nexus
+  become: yes
+  become_user: "{{ sansible_nexus_user }}"
+  unarchive:
+    copy: no
+    creates: "{{ sansible_nexus_directory_package }}/nexus-{{ sansible_nexus_version }}"
+    dest: "{{ sansible_nexus_directory_package }}"
+    src: "{{ sansible_nexus_directory_package }}/nexus-{{ sansible_nexus_version }}.tar.gz"
+
+- name: Link to Nexus Directory
+  become: yes
+  become_user: "{{ sansible_nexus_user }}"
+  file:
+    dest: "{{ sansible_nexus_directory_home }}"
+    src: "{{ sansible_nexus_directory_package }}/nexus-{{ sansible_nexus_version }}"
+    state: link
+
+- name: Add NEXUS_HOME for Nexus user
+  become: yes
+  become_user: "{{ sansible_nexus_user }}"
+  lineinfile:
+    create: yes
+    dest: "/home/{{ sansible_nexus_user }}/.bashrc"
+    insertafter: EOF
+    line: "export NEXUS_HOME={{ sansible_nexus_directory_home }}"
+
+- name: Add run_as_user to Nexus.rc
+  become: yes
+  become_user: "{{ sansible_nexus_user }}"
+  lineinfile:
+    create: yes
+    dest: "{{ sansible_nexus_directory_home }}/bin/nexus.rc"
+    insertafter: EOF
+    line: "run_as_user=\"{{ sansible_nexus_user }}\""
+    regexp: "^run_as_user"
+
+- name: Raise nofile limit for Nexus user
+  become: yes
+  pam_limits:
+    domain: "{{ sansible_nexus_user }}"
+    limit_type: "-"
+    limit_item: nofile
+    value: "{{ sansible_nexus_ulimit }}"
+
+- name: Ensure limits are used for Nexus service
+  become: yes
+  lineinfile:
+    dest: /etc/pam.d/common-session
+    insertafter: EOF
+    line: "session    required     pam_limits.so"
+
+- name: Create Nexus service for SysV
+  become: yes
+  file:
+    dest: /etc/init.d/nexus
+    src: "{{ sansible_nexus_directory_home }}/bin/nexus"
+    state: link
+  when: ansible_service_mgr != "systemd"
+
+- name: Ensure Nexus service is enabled for SysV
+  become: yes
+  service:
+    enabled: yes
+    name: nexus
+  when:
+    - sansible_nexus_service_enabled
+    - ansible_service_mgr != "systemd"
+
+- name: Create Nexus service for SystemD
+  become: yes
+  template:
+    dest: /lib/systemd/system/nexus.service
+    mode: 0644
+    src: service/nexus.systemd.j2
+  when: ansible_service_mgr == "systemd"
+
+- name: Ensure Nexus service is enabled for SystemD
+  become: yes
+  systemd:
+    daemon_reload: yes
+    enabled: yes
+    name: nexus
+  when:
+    - sansible_nexus_service_enabled
+    - ansible_service_mgr == "systemd"

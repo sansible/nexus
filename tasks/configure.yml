@@ -1,0 +1,40 @@
+---
+
+- name: Create Nexus vmoptions
+  become: yes
+  become_user: "{{ sansible_nexus_user }}"
+  template:
+    dest: "{{ sansible_nexus_directory_home }}/bin/nexus.vmoptions"
+    src: nexus.vmoptions.j2
+  register: sansible_nexus_config_changed
+
+- name: Create Nexus properties
+  become: yes
+  become_user: "{{ sansible_nexus_user }}"
+  template:
+    dest: "{{ sansible_nexus_directory_data }}/etc/nexus.properties"
+    src: nexus.properties.j2
+  register: sansible_nexus_config_changed
+
+- name: Start Nexus service if enabled
+  become: yes
+  service:
+    enabled: yes
+    name: nexus
+    state: started
+  when:
+    - sansible_nexus_service_enabled
+    - not sansible_nexus_config_changed.changed
+  tags:
+    - skip_ansible_lint
+
+- name: Ensure Nexus service is restarted
+  become: yes
+  service:
+    name: nexus
+    state: restarted
+  when:
+    - sansible_nexus_service_enabled
+    - sansible_nexus_config_changed.changed
+  tags:
+    - skip_ansible_lint

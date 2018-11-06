@@ -1,0 +1,13 @@
+#
+# {{ ansible_managed }}
+#
+
+# Jetty section
+application-host={{ sansible_nexus_host }}
+application-port={{ sansible_nexus_port }}
+nexus-context-path={{ sansible_nexus_context_path }}
+
+# Nexus section
+nexus-edition={{ sansible_nexus_edition }}
+nexus-features=\
+  {{ sansible_nexus_features }}

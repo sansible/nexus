@@ -1,4 +1,5 @@
-docker-py
+docker
 flake8
-molecule
+molecule==2.19.0
+pytest==3.9.3
 yamllint

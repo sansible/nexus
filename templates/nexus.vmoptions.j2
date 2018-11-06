@@ -1,0 +1,16 @@
+-Xms{{ sansible_nexus_java_heap_size }}
+-Xmx{{ sansible_nexus_java_heap_size }}
+-XX:MaxDirectMemorySize={{ sansible_nexus_java_max_direct_memory }}
+-XX:+UnlockDiagnosticVMOptions
+-XX:+UnsyncloadClass
+-XX:+LogVMOutput
+-XX:LogFile={{ sansible_nexus_directory_log }}/jvm.log
+-XX:-OmitStackTraceInFastThrow
+-Djava.net.preferIPv4Stack=true
+-Dkaraf.home=.
+-Dkaraf.base=.
+-Dkaraf.etc=etc/karaf
+-Djava.util.logging.config.file=etc/karaf/java.util.logging.properties
+-Dkaraf.data={{ sansible_nexus_directory_data }}
+-Djava.io.tmpdir={{ sansible_nexus_directory_tmp }}
+-Dkaraf.startLocalConsole=false

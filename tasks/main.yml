@@ -1,1 +1,11 @@
 ---
+
+- name: Install Nexus
+  include: build.yml
+  tags:
+    - build
+
+- name: Configure Nexus
+  include: configure.yml
+  tags:
+    - configure
