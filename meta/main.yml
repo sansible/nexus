@@ -1,29 +1,27 @@
 ---
 
-# For supported options, see https://galaxy.ansible.com/intro#meta
-
 galaxy_info:
-  author: ~
-  description: ~
-  # company: optional
-
+  description: "Installs Sonatype Nexus"
   license: MIT
-
-  # SAnsible only supports Ansible 2.4+
   min_ansible_version: 2.4
   min_ansible_container_version: 2.4
-
-  # All platforms supported by the role.  Ensure you test all in this list!
   platforms:
     - name: Ubuntu
       versions:
         - trusty
         - xenial
         - bionic
+  galaxy_tags:
+    - development
+    - cd
 
-  # List of tags for your role to enable users to find it easily on Ansible Galaxy.
-  # See https://galaxy.ansible.com/explore#/ for inspiration.
-  galaxy_tags: []
+dependencies:
+  - role: sansible.users_and_groups
+    sansible_users_and_groups_groups:
+      - name: "{{ sansible_nexus_group }}"
+    sansible_users_and_groups_users:
+      - name: "{{ sansible_nexus_user }}"
 
-# List of Ansible Galaxy roles on which your role depends on.
-dependencies: []
+  - role: sansible.java
+    sansible_java_version: "{{ sansible_nexus_dependencies_java_version }}"
+    when: sansible_nexus_dependencies_java_install == true

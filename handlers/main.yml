@@ -1,1 +1,25 @@
 ---
+
+- name: reload nexus
+  become: yes
+  service:
+    name: nexus
+    state: reloaded
+
+- name: restart nexus
+  become: yes
+  service:
+    name: nexus
+    state: restarted
+
+- name: start nexus
+  become: yes
+  service:
+    name: nexus
+    state: started
+
+- name: stop nexus
+  become: yes
+  service:
+    name: nexus
+    state: stopped
