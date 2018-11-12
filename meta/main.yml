@@ -21,6 +21,7 @@ dependencies:
       - name: "{{ sansible_nexus_group }}"
     sansible_users_and_groups_users:
       - name: "{{ sansible_nexus_user }}"
+        group: "{{ sansible_nexus_group }}"
 
   - role: sansible.java
     sansible_java_version: "{{ sansible_nexus_dependencies_java_version }}"

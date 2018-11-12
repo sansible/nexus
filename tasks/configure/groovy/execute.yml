@@ -1,0 +1,41 @@
+---
+
+- name: Set default script_path if none set
+  set_fact:
+    script_root_path: "{{ role_path }}/files"
+  when: script_root_path is not defined
+
+- name: "Removing previous Nexus Groovy script {{ script_name }}"
+  uri:
+    url: "http://127.0.0.1:{{ sansible_nexus_port }}{{ sansible_nexus_context_path }}service/rest/v1/script/{{ script_name }}"
+    user: admin
+    password: "{{ admin_password }}"
+    method: DELETE
+    force_basic_auth: yes
+    status_code: 204,404
+
+- name: "Declaring Nexus Groovy script {{ script_name }}"
+  uri:
+    url: "http://127.0.0.1:{{ sansible_nexus_port }}{{ sansible_nexus_context_path }}service/rest/v1/script"
+    user: admin
+    password: "{{ admin_password }}"
+    body_format: json
+    method: POST
+    force_basic_auth: yes
+    status_code: 204
+    body:
+      name: "{{ script_name }}"
+      type: "groovy"
+      content: "{{ lookup('file', script_root_path + '/groovy/' + script_path + '.groovy') }}"
+
+- name: "Calling Nexus Groovy script {{ script_name }}"
+  uri:
+    url: "http://127.0.0.1:{{ sansible_nexus_port }}{{ sansible_nexus_context_path }}service/rest/v1/script/{{ script_name }}/run"
+    user: 'admin'
+    password: "{{ admin_password }}"
+    headers:
+      Content-Type: "text/plain"
+    method: POST
+    status_code: 200,204
+    force_basic_auth: yes
+    body: "{{ args | default({}) | to_json }}"

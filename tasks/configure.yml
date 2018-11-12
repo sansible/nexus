@@ -23,7 +23,7 @@
     name: nexus
     state: started
   when:
-    - sansible_nexus_service_enabled
+    - sansible_nexus_service_start_on_boot
     - not sansible_nexus_config_changed.changed
   tags:
     - skip_ansible_lint
@@ -34,7 +34,20 @@
     name: nexus
     state: restarted
   when:
-    - sansible_nexus_service_enabled
+    - sansible_nexus_service_start_on_boot
     - sansible_nexus_config_changed.changed
   tags:
     - skip_ansible_lint
+
+- name: Wait for Nexus port if started
+  wait_for:
+    port: "{{ sansible_nexus_port }}"
+    state: started
+    timeout: "{{ sansible_nexus_port_check_timeout }}"
+  when:
+    - sansible_nexus_service_start_on_boot
+
+- name: Configure Nexus via Groovy scripts
+  include: configure/configure_scripts.yml
+  when:
+    - sansible_nexus_configuration_enabled

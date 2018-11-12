@@ -41,4 +41,32 @@ Simply include role in your playbook
 
   roles:
     - role: sansible.nexus
+      sansible_nexus_configuration_admin_password: securepassword
+```
+
+Groovy scripts are included in files/groovy for configuring a Nexus
+server from code, these scripts can be enabled and configured via
+role vars:
+
+```YAML
+- name: Install and Configure nexus
+  hosts: somehost
+
+  roles:
+    - role: sansible.nexus
+      sansible_nexus_configuration_admin_password: securepassword
+      sansible_nexus_configuration_realms:
+        - name: NuGetApiKey
+          enabled: true
+      sansible_nexus_configuration_roles:
+        - id: some-role
+          name: some-role
+          description: some-role
+          privileges:
+            - nx-search-read
+      sansible_nexus_configuration_s3_blobstores:
+        - bucket: some-bucket
+          expiration: 3
+          name: some-bucket
+          region: eu-west-1
 ```
