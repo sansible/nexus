@@ -5,3 +5,13 @@
 
   roles:
     - role: nexus
+      sansible_nexus_configuration_realms:
+        - name: NuGetApiKey
+          enabled: true
+      sansible_nexus_configuration_roles:
+        - id: dummy-role
+          name: dummy-role
+          description: dummy-role
+          privileges:
+            - nx-search-read
+      sansible_nexus_port_check_timeout: 300

@@ -2,4 +2,5 @@ docker
 flake8
 molecule==2.19.0
 pytest==3.9.3
+requests==2.20.1
 yamllint

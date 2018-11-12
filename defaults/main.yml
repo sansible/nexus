@@ -1,6 +1,30 @@
 ---
 
 sansible_nexus_context_path: /
+sansible_nexus_configuration_admin_password: pleasechangeme
+sansible_nexus_configuration_base_url: ~
+sansible_nexus_configuration_default_admin_password: admin123
+sansible_nexus_configuration_enabled: yes
+sansible_nexus_configuration_realms: []
+# - name: GithubOauth
+#   enabled: true
+sansible_nexus_configuration_roles: []
+# - id: org/group
+#   name: org/group
+#   privileges:
+#     - nx-search-read
+sansible_nexus_configuration_s3_blobstores: []
+# - bucket: ~
+#   expiration: 3
+#   name: ~
+#   region: ~
+sansible_nexus_configuration_http_proxy_enabled: no
+sansible_nexus_configuration_http_proxy_host: ~
+sansible_nexus_configuration_http_proxy_port: 8080
+sansible_nexus_configuration_https_proxy_enabled: no
+sansible_nexus_configuration_https_proxy_host: ~
+sansible_nexus_configuration_https_proxy_port: 8080
+sansible_nexus_configuration_no_proxy: ~
 sansible_nexus_dependencies_java_install: yes
 sansible_nexus_dependencies_java_version: 8
 sansible_nexus_directory_data: "/home/{{ sansible_nexus_user }}/sonatype-work/nexus3"
@@ -16,7 +40,9 @@ sansible_nexus_host: 0.0.0.0
 sansible_nexus_java_heap_size: 1200M
 sansible_nexus_java_max_direct_memory: 2G
 sansible_nexus_port: 8081
+sansible_nexus_port_check_timeout: 180
 sansible_nexus_service_enabled: yes
+sansible_nexus_service_start_on_boot: yes
 sansible_nexus_ulimit: 65536
 sansible_nexus_user: nexus
 sansible_nexus_version: 3.14.0-04

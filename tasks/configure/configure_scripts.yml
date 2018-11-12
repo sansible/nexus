@@ -1,0 +1,90 @@
+---
+
+- name: Check if Nexus is a fresh install
+  uri:
+    force_basic_auth: yes
+    method: GET
+    password: "{{ sansible_nexus_configuration_default_admin_password }}"
+    status_code: 200,401
+    user: admin
+    url: "http://localhost:{{ sansible_nexus_port }}{{ sansible_nexus_context_path }}service/rest/v1/script/"
+  register: sansible_nexus_fresh_install_check
+
+- name: Set Nexus fresh install fact
+  set_fact:
+    sansible_nexus_is_fresh_install: "{{ 'yes' if sansible_nexus_fresh_install_check.status == 200 else 'no' }}"
+
+- name: Update Nexus default admin password
+  import_tasks: groovy/execute.yml
+  vars:
+    admin_password: "{{ sansible_nexus_configuration_default_admin_password }}"
+    script_name: security_update_admin_password
+    script_path: security_update_admin_password
+    args:
+      new_password: "{{ sansible_nexus_configuration_admin_password }}"
+  when: sansible_nexus_is_fresh_install == true
+
+- name: Ensure Nexus base URL
+  import_tasks: groovy/execute.yml
+  vars:
+    admin_password: "{{ sansible_nexus_configuration_admin_password }}"
+    script_name: system_setup_base_url
+    script_path: system_setup_base_url
+    args:
+      base_url: "{{ sansible_nexus_configuration_base_url }}"
+  when: sansible_nexus_configuration_base_url is not none
+
+- name: Ensure Nexus HTTP proxy settings
+  import_tasks: groovy/execute.yml
+  vars:
+    admin_password: "{{ sansible_nexus_configuration_admin_password }}"
+    script_name: system_http_proxy
+    script_path: system_http_proxy
+    args:
+      with_http_proxy: "{{ sansible_nexus_configuration_http_proxy_enabled }}"
+      http_proxy_host: "{{ sansible_nexus_configuration_http_proxy_host }}"
+      http_proxy_port: "{{ sansible_nexus_configuration_http_proxy_port }}"
+      with_https_proxy: "{{ sansible_nexus_configuration_https_proxy_enabled }}"
+      https_proxy_host: "{{ sansible_nexus_configuration_https_proxy_host }}"
+      https_proxy_port: "{{ sansible_nexus_configuration_https_proxy_port }}"
+      no_proxy: "{{ sansible_nexus_configuration_no_proxy }}"
+  when: sansible_nexus_configuration_http_proxy_enabled == true or
+    sansible_nexus_configuration_https_proxy_enabled == true
+
+- name: Ensure Nexus S3 blobstore
+  include_tasks: groovy/execute.yml
+  vars:
+    admin_password: "{{ sansible_nexus_configuration_admin_password }}"
+    script_name: blobstore_create_s3
+    script_path: blobstore_create_s3
+    args:
+      bucket: "{{ item.bucket }}"
+      region: "{{ item.region }}"
+      expiration: "{{ item.expiration }}"
+      name: "{{ item.name }}"
+  with_items: "{{ sansible_nexus_configuration_s3_blobstores }}"
+
+- name: Ensure Nexus security realms
+  include_tasks: groovy/execute.yml
+  vars:
+    admin_password: "{{ sansible_nexus_configuration_admin_password }}"
+    script_name: security_realm
+    script_path: security_realm
+    args:
+      enabled: "{{ item.enabled }}"
+      name: "{{ item.name }}"
+  with_items: "{{ sansible_nexus_configuration_realms }}"
+
+- name: Ensure Nexus security roles
+  include_tasks: groovy/execute.yml
+  vars:
+    admin_password: "{{ sansible_nexus_configuration_admin_password }}"
+    script_name: security_role
+    script_path: security_role
+    args:
+      description: "{{ item.description | default('') }}"
+      id: "{{ item.id }}"
+      name: "{{ item.name }}"
+      privileges: "{{ item.privileges }}"
+      roles: "{{ item.roles | default([]) }}"
+  with_items: "{{ sansible_nexus_configuration_roles }}"
