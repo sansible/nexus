@@ -16,6 +16,18 @@
     src: nexus.properties.j2
   register: sansible_nexus_config_changed
 
+- name: Lower Nexus disk space threshold
+  become: yes
+  become_user: "{{ sansible_nexus_user }}"
+  lineinfile:
+    backrefs: yes
+    dest: "{{ sansible_nexus_directory_home }}/etc/karaf/system.properties"
+    insertafter: EOF
+    line: "storage.diskCache.diskFreeSpaceLimit={{ sansible_nexus_configuration_disk_free_space_limit }}"
+    regexp: ^storage\.diskCache\.diskFreeSpaceLimit
+  when: sansible_nexus_configuration_disk_free_space_limit is not none
+  register: sansible_nexus_config_changed
+
 - name: Start Nexus service if enabled
   become: yes
   service:
