@@ -5,6 +5,7 @@
 
   roles:
     - role: nexus
+      sansible_nexus_configuration_disk_free_space_limit: 1024
       sansible_nexus_configuration_realms:
         - name: NuGetApiKey
           enabled: true
