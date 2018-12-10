@@ -41,7 +41,7 @@ sansible_nexus_host: 0.0.0.0
 sansible_nexus_java_heap_size: 1200M
 sansible_nexus_java_max_direct_memory: 2G
 sansible_nexus_port: 8081
-sansible_nexus_port_check_timeout: 180
+sansible_nexus_port_check_timeout: 600
 sansible_nexus_service_enabled: yes
 sansible_nexus_service_start_on_boot: yes
 sansible_nexus_ulimit: 65536

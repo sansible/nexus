@@ -20,6 +20,7 @@
     admin_password: "{{ sansible_nexus_configuration_default_admin_password }}"
     script_name: security_update_admin_password
     script_path: security_update_admin_password
+    script_root_path: "{{ role_path }}/files"
     args:
       new_password: "{{ sansible_nexus_configuration_admin_password }}"
   when: sansible_nexus_is_fresh_install == true
@@ -30,6 +31,7 @@
     admin_password: "{{ sansible_nexus_configuration_admin_password }}"
     script_name: system_setup_base_url
     script_path: system_setup_base_url
+    script_root_path: "{{ role_path }}/files"
     args:
       base_url: "{{ sansible_nexus_configuration_base_url }}"
   when: sansible_nexus_configuration_base_url is not none
@@ -40,6 +42,7 @@
     admin_password: "{{ sansible_nexus_configuration_admin_password }}"
     script_name: system_http_proxy
     script_path: system_http_proxy
+    script_root_path: "{{ role_path }}/files"
     args:
       with_http_proxy: "{{ sansible_nexus_configuration_http_proxy_enabled }}"
       http_proxy_host: "{{ sansible_nexus_configuration_http_proxy_host }}"
@@ -57,6 +60,7 @@
     admin_password: "{{ sansible_nexus_configuration_admin_password }}"
     script_name: blobstore_create_s3
     script_path: blobstore_create_s3
+    script_root_path: "{{ role_path }}/files"
     args:
       bucket: "{{ item.bucket }}"
       region: "{{ item.region }}"
@@ -70,6 +74,7 @@
     admin_password: "{{ sansible_nexus_configuration_admin_password }}"
     script_name: security_realm
     script_path: security_realm
+    script_root_path: "{{ role_path }}/files"
     args:
       enabled: "{{ item.enabled }}"
       name: "{{ item.name }}"
@@ -81,6 +86,7 @@
     admin_password: "{{ sansible_nexus_configuration_admin_password }}"
     script_name: security_role
     script_path: security_role
+    script_root_path: "{{ role_path }}/files"
     args:
       description: "{{ item.description | default('') }}"
       id: "{{ item.id }}"
