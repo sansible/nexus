@@ -25,6 +25,16 @@
       new_password: "{{ sansible_nexus_configuration_admin_password }}"
   when: sansible_nexus_is_fresh_install == true
 
+- name: Set Nexus anonymous access
+  import_tasks: groovy/execute.yml
+  vars:
+    admin_password: "{{ sansible_nexus_configuration_admin_password }}"
+    script_name: security_anonymous_access
+    script_path: security_anonymous_access
+    script_root_path: "{{ role_path }}/files"
+    args:
+      enabled: "{{ sansible_nexus_configuration_allow_anonymous }}"
+
 - name: Ensure Nexus base URL
   import_tasks: groovy/execute.yml
   vars:

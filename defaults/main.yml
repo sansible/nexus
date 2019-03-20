@@ -2,6 +2,7 @@
 
 sansible_nexus_context_path: /
 sansible_nexus_configuration_admin_password: pleasechangeme
+sansible_nexus_configuration_allow_anonymous: no
 sansible_nexus_configuration_base_url: ~
 sansible_nexus_configuration_default_admin_password: admin123
 sansible_nexus_configuration_disk_free_space_limit: ~
